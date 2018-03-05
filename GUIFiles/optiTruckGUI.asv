@@ -146,7 +146,7 @@ spd=[];
 
 distLast = 0; 
 dst = [0];
-spd = [50];
+spd = [0];
 grd = [handles.rg_constant_slider.Value];
 wnd = [handles.wind_constant_slider.Value];
 maxspeed = 0;
@@ -154,8 +154,7 @@ axes(handles.axes1);
 for i=1:length(r.routes.geometry.coordinates)-1
     d = calculateDist(r.routes.geometry.coordinates(i, 2),r.routes.geometry.coordinates(i, 1),r.routes.geometry.coordinates(i+1, 2),r.routes.geometry.coordinates(i+1, 1));
     if d == 0
-       continue; 
-    end
+        
     dst = [dst distLast + d];
     %spd = [spd 50];
     grd = [grd  handles.rg_constant_slider.Value];
