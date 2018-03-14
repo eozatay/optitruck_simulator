@@ -22,7 +22,7 @@ function varargout = optiTruckGUI(varargin)
 
 % Edit the above text to modify the response to help optiTruckGUI
 
-% Last Modified by GUIDE v2.5 27-Feb-2018 18:02:30
+% Last Modified by GUIDE v2.5 14-Mar-2018 10:35:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -309,11 +309,13 @@ function rg_constant_Callback(hObject, eventdata, handles)
 if handles.rg_constant.Value
    handles.rg_random.Value = 0;
    handles.rg_cloud.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 else
    handles.rg_random.Value = 1;
    handles.rg_cloud.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 2;
 end
@@ -334,11 +336,13 @@ function rg_random_Callback(hObject, eventdata, handles)
 if handles.rg_random.Value
    handles.rg_constant.Value = 0;
    handles.rg_cloud.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 2;
 else
    handles.rg_constant.Value = 1;
    handles.rg_cloud.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 end
@@ -356,18 +360,45 @@ function rg_cloud_Callback(hObject, eventdata, handles)
 if handles.rg_cloud.Value
    handles.rg_constant.Value = 0;
    handles.rg_random.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 3;
 
 else
    handles.rg_constant.Value = 1;
    handles.rg_random.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 end
 
 guidata(hObject,handles);
 % Hint: get(hObject,'Value') returns toggle state of rg_cloud
+
+
+% --- Executes on button press in rg_file.
+function rg_file_Callback(hObject, eventdata, handles)
+% hObject    handle to rg_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if handles.rg_file.Value
+   handles.rg_constant.Value = 0;
+   handles.rg_random.Value = 0;
+   handles.rg_cloud.Value = 0;
+   
+   handles.rg_chosen_id = 4;
+
+else
+   handles.rg_constant.Value = 1;
+   handles.rg_random.Value = 0;
+   handles.rg_cloud.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+% Hint: get(hObject,'Value') returns toggle state of rg_file
 
 
 % --- Executes on button press in wind_constant_checkbox.
@@ -378,11 +409,14 @@ function wind_constant_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_constant_checkbox.Value
    handles.wind_random_checkbox.Value = 0;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 else
    handles.wind_random_checkbox.Value = 1;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
+
    
    handles.wind_chosen_id = 2;
 end
@@ -400,11 +434,13 @@ function wind_random_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_random_checkbox.Value
    handles.wind_constant_checkbox.Value = 0;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 2;
 else
    handles.wind_constant_checkbox.Value = 1;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 end
@@ -421,17 +457,42 @@ function wind_cloud_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_cloud_checkbox.Value
    handles.wind_random_checkbox.Value = 0;
    handles.wind_constant_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 3;
 else
    handles.wind_random_checkbox.Value = 0;
    handles.wind_constant_checkbox.Value = 1;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 end
 
 guidata(hObject,handles);
 % Hint: get(hObject,'Value') returns toggle state of wind_cloud_checkbox
+
+% --- Executes on button press in wind_file_checkbox.
+function wind_file_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to wind_cloud_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.wind_file_checkbox.Value
+   handles.wind_random_checkbox.Value = 0;
+   handles.wind_constant_checkbox.Value = 0;
+   handles.wind_cloud_checkbox.Value = 0;
+   
+   handles.wind_chosen_id = 4;
+else
+   handles.wind_random_checkbox.Value = 0;
+   handles.wind_constant_checkbox.Value = 1;
+   handles.wind_cloud_checkbox.Value = 0;
+   
+   handles.wind_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+% Hint: get(hObject,'Value') returns toggle state of wind_file_checkbox
+
 
 
 % --- Executes on slider movement.
@@ -443,6 +504,7 @@ get(hObject,'Value')
 handles.rg_constant.Value = 1;
 handles.rg_random.Value = 0;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 1;
 
@@ -477,6 +539,7 @@ function wind_constant_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 1;
 handles.wind_random_checkbox.Value = 0;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 1;
 
@@ -510,6 +573,7 @@ function rd_sin_per_slider_Callback(hObject, eventdata, handles)
 handles.rg_constant.Value = 0;
 handles.rg_random.Value = 1;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 2;
 
@@ -542,6 +606,7 @@ function rd_sin_amp_slider_Callback(hObject, eventdata, handles)
 handles.rg_constant.Value = 0;
 handles.rg_random.Value = 1;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 2;
 
@@ -574,6 +639,7 @@ function wind_sin_per_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 0;
 handles.wind_random_checkbox.Value = 1;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 2;
 
@@ -606,6 +672,7 @@ function wind_sin_amp_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 0;
 handles.wind_random_checkbox.Value = 1;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 2;
 
@@ -679,3 +746,66 @@ end
 % assignin('base', 'gui_cloud_wind', wnd)
 % assignin('base', 'gui_cloud_grade', grd)
 
+
+% --- Executes on selection change in listbox1.
+function listbox1_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox1
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+fileName = hObject.String{hObject.Value};
+disp(fileName);
+
+validFileChosen = 0;
+if ~strcmp(fileName, '')
+   validFileChosen = 1; 
+   disp('Valid File Chosen');
+end
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+
+hObject.String = {''};
+listing = dir('PredefinedRoutes');
+for i=1:length(listing)
+   if contains(listing(i).name,'.xlsx')
+       hObject.String{end+1} = listing(i).name;
+   end
+end
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
