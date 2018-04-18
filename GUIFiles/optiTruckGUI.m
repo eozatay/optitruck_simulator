@@ -10,7 +10,7 @@ function varargout = optiTruckGUI(varargin)
 %      function named CALLBACK in OPTITRUCKGUI.M with the given input arguments.
 %
 %      OPTITRUCKGUI('Property','Value',...) creates a new OPTITRUCKGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
+%      existing singleton*.  Starting from the left, property vFalue pairs are
 %      applied to the GUI before optiTruckGUI_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
 %      stop.  All inputs are passed to optiTruckGUI_OpeningFcn via varargin.
@@ -181,6 +181,8 @@ handles.cloud_tim = zeros(size(dst));
 handles.cloud_grd = grd;
 handles.cloud_wnd = wnd;
 handles.cloud_spd = spd;
+handles.cloud_stopdurations = [5,5,5,5];
+
 handles.cloud_totalDist = dst(end);
 handles.cloud_totalDur  = r.routes.duration;
 
@@ -721,7 +723,7 @@ else
     routeData = struct('Distance', handles.cloud_dst, 'Speed', handles.cloud_spd, 'Time', handles.cloud_tim, ...
                        'Total_Distance', handles.cloud_totalDist, 'Total_Duration', handles.cloud_totalDur, ...
                        'Grade', handles.cloud_grd, 'Wind', handles.cloud_wnd,...
-                       'Filetype', handles.sp_file_type);                   
+                       'Filetype', handles.sp_file_type,'StopDurations', handles.cloud_stopdurations);                   
 
     guiOut = struct('RoadGradeInfo', roadGradeData, 'WindInfo', windData, 'RouteInfo', routeData);
 
@@ -806,6 +808,7 @@ if ~strcmp(fileName, '')
        handles.cloud_wnd = zeros(size(handles.cloud_dst));
        handles.cloud_totalDist = val(end,1);
        handles.cloud_totalDur  = 1e9;
+       handles.cloud_stopdurations = [5,5,5,5,5];
        
        
        handles.distance_text.String = [num2str(val(end,1)/1000, '%.1f') ' KM'];
@@ -825,6 +828,8 @@ if ~strcmp(fileName, '')
        handles.cloud_wnd = zeros(size(handles.cloud_tim));
        handles.cloud_totalDist = 1e9;
        handles.cloud_totalDur  = val(end,1);
+       handles.cloud_stopdurations = [5,5,5,5,5];
+
        
        
        dur = val(end,1);
@@ -845,8 +850,9 @@ if ~strcmp(fileName, '')
        warndlg({'File has wrong format. Make sure that the first row is consists of the headers and the first column of first row is either Distance or Time'}, 'Warning!', 'modal');
    end
    
-   
 end
+
+guidata(hObject,handles);
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu1
