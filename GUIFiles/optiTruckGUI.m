@@ -10,7 +10,7 @@ function varargout = optiTruckGUI(varargin)
 %      function named CALLBACK in OPTITRUCKGUI.M with the given input arguments.
 %
 %      OPTITRUCKGUI('Property','Value',...) creates a new OPTITRUCKGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
+%      existing singleton*.  Starting from the left, property vFalue pairs are
 %      applied to the GUI before optiTruckGUI_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
 %      stop.  All inputs are passed to optiTruckGUI_OpeningFcn via varargin.
@@ -22,7 +22,7 @@ function varargout = optiTruckGUI(varargin)
 
 % Edit the above text to modify the response to help optiTruckGUI
 
-% Last Modified by GUIDE v2.5 27-Feb-2018 18:02:30
+% Last Modified by GUIDE v2.5 04-Apr-2018 08:35:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -175,10 +175,14 @@ dur = dur - durHR*3600;
 durMIN = floor(dur/60);
 durSEC = dur - durMIN*60;
 
+handles.sp_file_type = 1;
 handles.cloud_dst = dst;
+handles.cloud_tim = zeros(size(dst));
 handles.cloud_grd = grd;
 handles.cloud_wnd = wnd;
 handles.cloud_spd = spd;
+handles.cloud_stopdurations = [5,5,5,5];
+
 handles.cloud_totalDist = dst(end);
 handles.cloud_totalDur  = r.routes.duration;
 
@@ -309,11 +313,13 @@ function rg_constant_Callback(hObject, eventdata, handles)
 if handles.rg_constant.Value
    handles.rg_random.Value = 0;
    handles.rg_cloud.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 else
    handles.rg_random.Value = 1;
    handles.rg_cloud.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 2;
 end
@@ -334,11 +340,13 @@ function rg_random_Callback(hObject, eventdata, handles)
 if handles.rg_random.Value
    handles.rg_constant.Value = 0;
    handles.rg_cloud.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 2;
 else
    handles.rg_constant.Value = 1;
    handles.rg_cloud.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 end
@@ -356,18 +364,45 @@ function rg_cloud_Callback(hObject, eventdata, handles)
 if handles.rg_cloud.Value
    handles.rg_constant.Value = 0;
    handles.rg_random.Value = 0;
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 3;
 
 else
    handles.rg_constant.Value = 1;
    handles.rg_random.Value = 0; 
+   handles.rg_file.Value = 0;
    
    handles.rg_chosen_id = 1;
 end
 
 guidata(hObject,handles);
 % Hint: get(hObject,'Value') returns toggle state of rg_cloud
+
+
+% --- Executes on button press in rg_file.
+function rg_file_Callback(hObject, eventdata, handles)
+% hObject    handle to rg_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if handles.rg_file.Value
+   handles.rg_constant.Value = 0;
+   handles.rg_random.Value = 0;
+   handles.rg_cloud.Value = 0;
+   
+   handles.rg_chosen_id = 4;
+
+else
+   handles.rg_constant.Value = 1;
+   handles.rg_random.Value = 0;
+   handles.rg_cloud.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+% Hint: get(hObject,'Value') returns toggle state of rg_file
 
 
 % --- Executes on button press in wind_constant_checkbox.
@@ -378,11 +413,14 @@ function wind_constant_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_constant_checkbox.Value
    handles.wind_random_checkbox.Value = 0;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 else
    handles.wind_random_checkbox.Value = 1;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
+
    
    handles.wind_chosen_id = 2;
 end
@@ -400,11 +438,13 @@ function wind_random_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_random_checkbox.Value
    handles.wind_constant_checkbox.Value = 0;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 2;
 else
    handles.wind_constant_checkbox.Value = 1;
    handles.wind_cloud_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 end
@@ -421,17 +461,42 @@ function wind_cloud_checkbox_Callback(hObject, eventdata, handles)
 if handles.wind_cloud_checkbox.Value
    handles.wind_random_checkbox.Value = 0;
    handles.wind_constant_checkbox.Value = 0;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 3;
 else
    handles.wind_random_checkbox.Value = 0;
    handles.wind_constant_checkbox.Value = 1;
+   handles.wind_file_checkbox.Value = 0;
    
    handles.wind_chosen_id = 1;
 end
 
 guidata(hObject,handles);
 % Hint: get(hObject,'Value') returns toggle state of wind_cloud_checkbox
+
+% --- Executes on button press in wind_file_checkbox.
+function wind_file_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to wind_cloud_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.wind_file_checkbox.Value
+   handles.wind_random_checkbox.Value = 0;
+   handles.wind_constant_checkbox.Value = 0;
+   handles.wind_cloud_checkbox.Value = 0;
+   
+   handles.wind_chosen_id = 4;
+else
+   handles.wind_random_checkbox.Value = 0;
+   handles.wind_constant_checkbox.Value = 1;
+   handles.wind_cloud_checkbox.Value = 0;
+   
+   handles.wind_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+% Hint: get(hObject,'Value') returns toggle state of wind_file_checkbox
+
 
 
 % --- Executes on slider movement.
@@ -443,6 +508,7 @@ get(hObject,'Value')
 handles.rg_constant.Value = 1;
 handles.rg_random.Value = 0;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 1;
 
@@ -477,6 +543,7 @@ function wind_constant_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 1;
 handles.wind_random_checkbox.Value = 0;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 1;
 
@@ -510,6 +577,7 @@ function rd_sin_per_slider_Callback(hObject, eventdata, handles)
 handles.rg_constant.Value = 0;
 handles.rg_random.Value = 1;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 2;
 
@@ -542,6 +610,7 @@ function rd_sin_amp_slider_Callback(hObject, eventdata, handles)
 handles.rg_constant.Value = 0;
 handles.rg_random.Value = 1;
 handles.rg_cloud.Value = 0;
+handles.rg_file.Value = 0;
 
 handles.rg_chosen_id = 2;
 
@@ -574,6 +643,7 @@ function wind_sin_per_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 0;
 handles.wind_random_checkbox.Value = 1;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 2;
 
@@ -606,6 +676,7 @@ function wind_sin_amp_slider_Callback(hObject, eventdata, handles)
 handles.wind_constant_checkbox.Value = 0;
 handles.wind_random_checkbox.Value = 1;
 handles.wind_cloud_checkbox.Value = 0;
+handles.wind_file_checkbox.Value = 0;
 
 handles.wind_chosen_id = 2;
 
@@ -649,9 +720,10 @@ else
     windData = struct('Indx', handles.wind_chosen_id, 'Constant', handles.wind_constant_slider.Value, ...
                            'Period', handles.wind_sin_per_slider.Value, 'Amplitude', handles.wind_sin_amp_slider.Value); 
 
-    routeData = struct('Distance', handles.cloud_dst, 'Speed', handles.cloud_spd, ...
+    routeData = struct('Distance', handles.cloud_dst, 'Speed', handles.cloud_spd, 'Time', handles.cloud_tim, ...
                        'Total_Distance', handles.cloud_totalDist, 'Total_Duration', handles.cloud_totalDur, ...
-                       'Grade', handles.cloud_grd, 'Wind', handles.cloud_wnd);                   
+                       'Grade', handles.cloud_grd, 'Wind', handles.cloud_wnd,...
+                       'Filetype', handles.sp_file_type,'StopDurations', handles.cloud_stopdurations);                   
 
     guiOut = struct('RoadGradeInfo', roadGradeData, 'WindInfo', windData, 'RouteInfo', routeData);
 
@@ -679,3 +751,362 @@ end
 % assignin('base', 'gui_cloud_wind', wnd)
 % assignin('base', 'gui_cloud_grade', grd)
 
+
+% --- Executes on selection change in listbox1.
+function listbox1_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox1
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+fileName = hObject.String{hObject.Value};
+disp(fileName);
+
+validFileChosen = 0;
+if ~strcmp(fileName, '')
+   validFileChosen = 1; 
+   disp('Valid File Chosen');
+   
+   handles.sp_constant_checkbox.Value = 0;
+   handles.sp_sin_checkbox.Value = 0;
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 1;
+
+   handles.sp_chosen_id = 5;
+   
+   handles.sp_file_type = 0;
+   [val, raw, txt] = xlsread(['./GUIFiles/PredefinedRoutes/' fileName]);
+   if strcmp(txt{1,1}, 'Distance')
+       handles.sp_file_type = 1;
+       handles.cloud_dst = val(:,1);
+       handles.cloud_tim = zeros(length(handles.cloud_dst),1);
+       handles.cloud_spd = val(:,2);
+       handles.cloud_grd = zeros(size(handles.cloud_dst));
+       handles.cloud_wnd = zeros(size(handles.cloud_dst));
+       handles.cloud_totalDist = val(end,1);
+       handles.cloud_totalDur  = 1e9;
+       handles.cloud_stopdurations = [5,5,5,5,5];
+       
+       
+       handles.distance_text.String = [num2str(val(end,1)/1000, '%.1f') ' KM'];
+       handles.duration_text.String = 'Not Defined'; 
+       
+       axes(handles.axes2);
+       plot(handles.cloud_dst/1000, handles.cloud_spd,'r', 'Linewidth',3)
+       ylabel('Speed [kph]')
+       xlabel('Dist [km]')
+       
+   elseif strcmp(txt{1,1}, 'Time')
+       handles.sp_file_type = 2;
+       handles.cloud_tim = val(:,1);
+       handles.cloud_dst = zeros(length(handles.cloud_tim),1);
+       handles.cloud_spd = val(:,2);
+       handles.cloud_grd = zeros(size(handles.cloud_tim));
+       handles.cloud_wnd = zeros(size(handles.cloud_tim));
+       handles.cloud_totalDist = 1e9;
+       handles.cloud_totalDur  = val(end,1);
+       handles.cloud_stopdurations = [5,5,5,5,5];
+
+       
+       
+       dur = val(end,1);
+       durHR = floor(dur/3600);
+       dur = dur - durHR*3600;
+       durMIN = floor(dur/60);
+       durSEC = dur - durMIN*60;       
+       
+       handles.distance_text.String = 'Not Defined'; 
+       handles.duration_text.String = [num2str(durHR, '%02.0f') ':' num2str(durMIN, '%02.0f') ':' num2str(durSEC, '%02.0f')]; 
+       
+       axes(handles.axes2);
+       plot(handles.cloud_tim, handles.cloud_spd,'r', 'Linewidth',3)
+       ylabel('Speed [kph]')
+       xlabel('Time [sec]')
+       
+   else
+       warndlg({'File has wrong format. Make sure that the first row is consists of the headers and the first column of first row is either Distance or Time'}, 'Warning!', 'modal');
+   end
+   
+end
+
+guidata(hObject,handles);
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+
+hObject.String = {''};
+listing = dir('./GUIFiles/PredefinedRoutes');
+for i=1:length(listing)
+   if contains(listing(i).name,'.xlsx')
+       hObject.String{end+1} = listing(i).name;
+   end
+end
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in sp_constant_checkbox.
+function sp_constant_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_constant_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of sp_constant_checkbox
+
+if handles.sp_constant_checkbox.Value
+   handles.sp_sin_checkbox.Value = 0;
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.sp_chosen_id = 1;
+else
+   handles.sp_sin_checkbox.Value = 1;
+   handles.sp_nedc_checkbox.Value = 0; 
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.rg_chosen_id = 2;
+end
+
+guidata(hObject,handles);
+
+
+% --- Executes on button press in sp_sin_checkbox.
+function sp_sin_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_sin_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of sp_sin_checkbox
+
+if handles.sp_sin_checkbox.Value
+   handles.sp_constant_checkbox.Value = 0;
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.sp_chosen_id = 2;
+else
+   handles.sp_constant_checkbox.Value = 1;
+   handles.sp_nedc_checkbox.Value = 0; 
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+
+
+% --- Executes on button press in sp_nedc_checkbox.
+function sp_nedc_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_nedc_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of sp_nedc_checkbox
+if handles.sp_nedc_checkbox.Value
+   handles.sp_constant_checkbox.Value = 0;
+   handles.sp_sin_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.sp_chosen_id = 3;
+else
+   handles.sp_constant_checkbox.Value = 1;
+   handles.sp_sin_checkbox.Value = 0; 
+   handles.sp_cloud_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+
+
+% --- Executes on button press in sp_file_checkbox.
+function sp_cloud_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_file_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of sp_file_checkbox
+if handles.sp_cloud_checkbox.Value
+   handles.sp_constant_checkbox.Value = 0;
+   handles.sp_sin_checkbox.Value = 0;
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.sp_chosen_id = 4;
+else
+   handles.sp_constant_checkbox.Value = 1;
+   handles.sp_sin_checkbox.Value = 0; 
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_file_checkbox.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+
+
+% --- Executes on button press in sp_cloud_checkbox.
+function sp_file_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_cloud_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of sp_cloud_checkbox
+if handles.sp_file_checkbox.Value
+   handles.sp_constant_checkbox.Value = 0;
+   handles.sp_sin_checkbox.Value = 0;
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   
+   handles.sp_chosen_id = 5;
+else
+   handles.sp_constant_checkbox.Value = 1;
+   handles.sp_sin_checkbox.Value = 0; 
+   handles.sp_nedc_checkbox.Value = 0;
+   handles.sp_cloud_checkbox.Value = 0;
+   
+   handles.rg_chosen_id = 1;
+end
+
+guidata(hObject,handles);
+
+
+% --- Executes on slider movement.
+function sp_constant_slider_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_constant_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
+handles.sp_constant_checkbox.Value = 1;
+handles.sp_sin_checkbox.Value = 0;
+handles.sp_nedc_checkbox.Value = 0;
+handles.sp_cloud_checkbox.Value = 0;
+handles.sp_file_checkbox.Value = 0;
+
+handles.sp_chosen_id = 1;
+
+handles.sp_const_label.String= [num2str(hObject.Value, '%.0f') ' kph'];
+
+guidata(hObject,handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function sp_constant_slider_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sp_constant_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% --- Executes on slider movement.
+function sp_sin_per_slider_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_sin_per_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+handles.sp_constant_checkbox.Value = 0;
+handles.sp_sin_checkbox.Value = 1;
+handles.sp_nedc_checkbox.Value = 0;
+handles.sp_cloud_checkbox.Value = 0;
+handles.sp_file_checkbox.Value = 0;
+
+handles.sp_chosen_id = 2;
+
+handles.sp_sin_per_text.String= [num2str(hObject.Value, '%.0f') ' m'];
+
+guidata(hObject,handles);
+
+% --- Executes during object creation, after setting all properties.
+function sp_sin_per_slider_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sp_sin_per_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+% --- Executes on slider movement.
+function sp_sin_amp_slider_Callback(hObject, eventdata, handles)
+% hObject    handle to sp_sin_amp_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
+handles.sp_constant_checkbox.Value = 0;
+handles.sp_sin_checkbox.Value = 1;
+handles.sp_nedc_checkbox.Value = 0;
+handles.sp_cloud_checkbox.Value = 0;
+handles.sp_file_checkbox.Value = 0;
+
+handles.sp_chosen_id = 2;
+
+handles.sp_sin_amp_text.String= [num2str(hObject.Value, '%.0f') ' kph'];
+
+guidata(hObject,handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function sp_sin_amp_slider_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sp_sin_amp_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
