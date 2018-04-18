@@ -798,7 +798,7 @@ if ~strcmp(fileName, '')
    handles.sp_chosen_id = 5;
    
    handles.sp_file_type = 0;
-   [val, raw, txt] = xlsread(['PredefinedRoutes/' fileName]);
+   [val, raw, txt] = xlsread(['./GUIFiles/PredefinedRoutes/' fileName]);
    if strcmp(txt{1,1}, 'Distance')
        handles.sp_file_type = 1;
        handles.cloud_dst = val(:,1);
@@ -868,7 +868,7 @@ function popupmenu1_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 
 hObject.String = {''};
-listing = dir('PredefinedRoutes');
+listing = dir('./GUIFiles/PredefinedRoutes');
 for i=1:length(listing)
    if contains(listing(i).name,'.xlsx')
        hObject.String{end+1} = listing(i).name;
