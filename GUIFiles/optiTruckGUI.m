@@ -718,14 +718,17 @@ else
                            'Period', handles.rd_sin_per_slider.Value, 'Amplitude', handles.rd_sin_amp_slider.Value);
 
     windData = struct('Indx', handles.wind_chosen_id, 'Constant', handles.wind_constant_slider.Value, ...
-                           'Period', handles.wind_sin_per_slider.Value, 'Amplitude', handles.wind_sin_amp_slider.Value); 
+                           'Period', handles.wind_sin_per_slider.Value, 'Amplitude', handles.wind_sin_amp_slider.Value);
+                       
+    refSpdData = struct('Indx', handles.sp_chosen_id, 'Constant', handles.sp_constant_slider.Value, ...
+                           'Period', handles.sp_sin_per_slider.Value, 'Amplitude', handles.sp_sin_amp_slider.Value);
 
     routeData = struct('Distance', handles.cloud_dst, 'Speed', handles.cloud_spd, 'Time', handles.cloud_tim, ...
                        'Total_Distance', handles.cloud_totalDist, 'Total_Duration', handles.cloud_totalDur, ...
                        'Grade', handles.cloud_grd, 'Wind', handles.cloud_wnd,...
                        'Filetype', handles.sp_file_type,'StopDurations', handles.cloud_stopdurations);                   
 
-    guiOut = struct('RoadGradeInfo', roadGradeData, 'WindInfo', windData, 'RouteInfo', routeData);
+    guiOut = struct('RoadGradeInfo', roadGradeData, 'WindInfo', windData, 'RouteInfo', routeData, 'RefSpdInfo', refSpdData);
 
 
     assignin('base', 'gui_data', guiOut);    
@@ -808,9 +811,22 @@ if ~strcmp(fileName, '')
        handles.cloud_wnd = zeros(size(handles.cloud_dst));
        handles.cloud_totalDist = val(end,1);
        handles.cloud_totalDur  = 1e9;
-       handles.cloud_stopdurations = [5,5,5,5,5];
        
+       [r,c] = size(val);
        
+
+       handles.cloud_stopdurations = [];
+       
+       if c >= 3
+           handles.cloud_tim = val(:,3);
+           for i=1:length(handles.cloud_spd)-1
+              if handles.cloud_spd(i) == 0 && handles.cloud_spd(i+1) == 0
+                  handles.cloud_stopdurations = [handles.cloud_stopdurations handles.cloud_tim(i+1) - handles.cloud_tim(i)];
+                  handles.cloud_dst(i+1) = handles.cloud_dst(i+1) + 0.001; 
+              end
+           end
+       end
+       handles.cloud_stopdurations = [handles.cloud_stopdurations,5,5,5,5,5];       
        handles.distance_text.String = [num2str(val(end,1)/1000, '%.1f') ' KM'];
        handles.duration_text.String = 'Not Defined'; 
        
