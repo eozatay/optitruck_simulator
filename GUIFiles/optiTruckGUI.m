@@ -819,11 +819,33 @@ if ~strcmp(fileName, '')
        
        if c >= 3
            handles.cloud_tim = val(:,3);
+           isStopped = false;
+           duration = 0;
            for i=1:length(handles.cloud_spd)-1
+               
+               if handles.cloud_spd(i) == 0 && ~isStopped 
+                  isStopped = true;
+                  duration = 0;
+               elseif handles.cloud_spd(i) == 0 && isStopped
+                  duration = duration +  (handles.cloud_tim(i) - handles.cloud_tim(i-1)) ;
+               elseif handles.cloud_spd(i) > 0 && isStopped
+                   isStopped = false;
+                   if duration < 1
+                      duration = 1; 
+                   end
+                   handles.cloud_stopdurations = [handles.cloud_stopdurations duration];
+               end
+               
               if handles.cloud_spd(i) == 0 && handles.cloud_spd(i+1) == 0
-                  handles.cloud_stopdurations = [handles.cloud_stopdurations handles.cloud_tim(i+1) - handles.cloud_tim(i)];
-                  handles.cloud_dst(i+1) = handles.cloud_dst(i+1) + 0.001; 
+                  handles.cloud_dst(i+1) = handles.cloud_dst(i) + 0.0001; 
               end
+           end
+           
+           if isStopped && duration > 0
+              if duration < 1
+                 duration = 1; 
+              end
+              handles.cloud_stopdurations = [handles.cloud_stopdurations duration]; 
            end
        end
        handles.cloud_stopdurations = [handles.cloud_stopdurations,5,5,5,5,5];       
