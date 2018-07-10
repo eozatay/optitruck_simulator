@@ -1,3 +1,4 @@
+function RemovePreviousOptiTruckPaths
 % Read current MatlabPath
 MatlabPath  = path;
 PathInd  	= strfind(MatlabPath, ';');
@@ -22,7 +23,10 @@ for i = 1:numel(MatlabPathList)
     end
 end
 % Search current path and add new path
-UpperFolderName = pwd;
+mfile_Name      = mfilename;
+mfile_FullPath  = mfilename('fullpath');
+mfile_Path      = mfile_FullPath(1:end-numel(mfile_Name)-1);
+UpperFolderName = mfile_Path;
 indUpper        = strfind(UpperFolderName, '\');
 UpperFolderName = UpperFolderName(1:indUpper(end)-1);
 for j = 1:numel(SearchPath)
