@@ -33,7 +33,7 @@ if Options.LoadRefCycle
     end
     % Overwrite to gui_data
     gui_data.RoadGradeInfo.Indx         = 3;
-    gui_data.RouteInfo.Indx             = 3;
+    gui_data.RouteInfo.Filetype         = 2; % 1: Distance Based (vVeh_Ref), 2: Time Based (vVeh_Ref) (if starts with 1 - shifted vVeh_Ref trace) 
     gui_data.RouteInfo.Distance         = REFcycle.Distance;
     gui_data.RouteInfo.Speed            = REFcycle.Velocity;
     gui_data.RouteInfo.Grade            = REFcycle.Grade;
@@ -41,18 +41,13 @@ if Options.LoadRefCycle
     gui_data.RouteInfo.Wind             = 0*gui_data.RouteInfo.Speed;
     gui_data.RouteInfo.Total_Distance	= gui_data.RouteInfo.Distance(end);
     gui_data.RouteInfo.Total_Duration   = REFcycle.Time(end);
-    gui_data.RouteInfo.Constant         = 85;
-    gui_data.RouteInfo.Offset           = 60;
-    gui_data.RouteInfo.Amplitude        = 30;
-    gui_data.RouteInfo.Period           = 1000;
-    gui_data.RouteInfo.StopTimes        = 2;
-    gui_data.RouteInfo.Speed(1)         = max(gui_data.RouteInfo.Speed(1), 1); % !!!  Critial (if starts with 0 - delayed launch)
+    gui_data.RouteInfo.Speed(1)         = max(gui_data.RouteInfo.Speed(1), 1); % !!!  Critial (if starts with 0 - delayed launch)  
 end
 %% Run Simulation
 % SimStart&FinishTime
 open_system(SimModelName);
 SimStartTime 	= 0;
-SimStopTime     = SimStartTime+3000;
+SimStopTime     = SimStartTime+100;
 if SimStartTime > 0
     [RefModels,RefModelBlks] = find_mdlrefs(SimModelName(1:end-4),'AllLevels',true,'IncludeProtectedModels',false,'IncludeCommented','on');
     for i = 1:numel(RefModels)
