@@ -33,6 +33,18 @@ if isfield(MEAStest, 'CoEOM_numOpModeAct')
     MEAStest.stOpModeAct            = MEAStest.ECU_numOperModAct_PHY;
     UNITmeas.ECU_numOperModAct_PHY	= '[-]';
 end
+% Eng Speed
+if isfield(MEAStest, 'Epm_nEng')
+    MEAStest.TrsmMdl_nCrksft_PHY            = MEAStest.Epm_nEng;
+    UNITmeas.TrsmMdl_nCrksft_PHY            = 'Rpm';
+    if ~isfield(MEAStest, 'EngSpeed')
+        MEAStest.EngSpeed            = MEAStest.Epm_nEng;
+        UNITmeas.EngSpeed            = 'Rpm';
+    end
+elseif isfield(MEAStest, 'EngSpeed')
+    MEAStest.TrsmMdl_nCrksft_PHY            = MEAStest.EngSpeed;
+    UNITmeas.TrsmMdl_nCrksft_PHY            = 'Rpm';
+end
 % Veh Speed
 if isfield(MEAStest, 'VehV_v')
     MEAStest.LgtVehMdl_vVehSpd_PHY          = MEAStest.VehV_v;
@@ -40,14 +52,13 @@ if isfield(MEAStest, 'VehV_v')
 elseif isfield(MEAStest, 'WheelBasedVehicleSpeed_CCVS_ECM')
     MEAStest.LgtVehMdl_vVehSpd_PHY          = MEAStest.WheelBasedVehicleSpeed_CCVS_ECM;
     UNITmeas.LgtVehMdl_vVehSpd_PHY          = 'km/h';
-end
-% Eng Speed
-if isfield(MEAStest, 'Epm_nEng')
-    MEAStest.TrsmMdl_nCrksft_PHY            = MEAStest.Epm_nEng;
-    UNITmeas.TrsmMdl_nCrksft_PHY            = 'Rpm';
-elseif isfield(MEAStest, 'EngSpeed')
-    MEAStest.TrsmMdl_nCrksft_PHY            = MEAStest.EngSpeed;
-    UNITmeas.TrsmMdl_nCrksft_PHY            = 'Rpm';
+else
+    MEAStest.VehV_v                         = MEAStest.TrsmMdl_nCrksft_PHY*0;
+    UNITmeas.VehV_v                         = 'km/h';
+    MEAStest.WheelBasedVehicleSpeed_CCVS_ECM	= MEAStest.VehV_v;
+    UNITmeas.WheelBasedVehicleSpeed_CCVS_ECM	= 'km/h';
+    MEAStest.LgtVehMdl_vVehSpd_PHY          = MEAStest.VehV_v;
+    UNITmeas.LgtVehMdl_vVehSpd_PHY          = 'km/h';
 end
 % Gear
 if isfield(MEAStest, 'Tra_numGear')
@@ -55,6 +66,11 @@ if isfield(MEAStest, 'Tra_numGear')
     UNITmeas.TCU_numGear_PHY                = '-';
 elseif isfield(MEAStest, 'TransCurrentGear')
     MEAStest.TCU_numGear_PHY                = MEAStest.TransCurrentGear;
+    UNITmeas.TCU_numGear_PHY                = '-';
+else
+    MEAStest.Tra_numGear                    = MEAStest.TrsmMdl_nCrksft_PHY*0;
+    UNITmeas.Tra_numGear                    = '-';
+    MEAStest.TCU_numGear_PHY                = MEAStest.Tra_numGear;
     UNITmeas.TCU_numGear_PHY                = '-';
 end
 % Indicated torque
@@ -87,6 +103,11 @@ end
 if isfield(MEAStest, 'TrbCh_rAct')
     MEAStest.ECU_prcTrbVlvDes_PHY           = MEAStest.TrbCh_rAct;
     UNITmeas.ECU_prcTrbVlvDes_PHY           = '%';
+elseif isfield(MEAStest, 'TrbCh_rActB1')
+    MEAStest.TrbCh_rAct                     = MEAStest.TrbCh_rActB1;
+    UNITmeas.TrbCh_rAct                     = '%';
+    MEAStest.ECU_prcTrbVlvDes_PHY           = MEAStest.TrbCh_rAct;
+    UNITmeas.ECU_prcTrbVlvDes_PHY           = '%';
 end
 % EGR pos
 if isfield(MEAStest, 'EGRVlv_rAct')
@@ -110,6 +131,11 @@ if isfield(MEAStest, 'Air_pIntkVUs')
 end
 % MAFref
 if isfield(MEAStest, 'AirCtl_dmAirDesDyn_r32')
+    MEAStest.ECU_mflChrgdAirDes_PHY         = MEAStest.AirCtl_dmAirDesDyn_r32/3600;
+    UNITmeas.ECU_mflChrgdAirDes_PHY         = 'kg/sec';
+elseif isfield(MEAStest, 'AirCtl_mAirPerCylDesDyn_r32')
+    MEAStest.AirCtl_dmAirDesDyn_r32         = MEAStest.AirCtl_mAirPerCylDesDyn_r32 * 1e-6 .* MEAStest.EngSpeed * 6 / 2 * 60;
+    UNITmeas.AirCtl_dmAirDesDyn_r32         = 'kg/h';
     MEAStest.ECU_mflChrgdAirDes_PHY         = MEAStest.AirCtl_dmAirDesDyn_r32/3600;
     UNITmeas.ECU_mflChrgdAirDes_PHY         = 'kg/sec';
 end
@@ -177,9 +203,19 @@ end
 if isfield(MEAStest, 'Exh_rNOxNSCDs')
     MEAStest.EngMdl_ratNOx_PHY              = MEAStest.Exh_rNOxNSCDs;
     UNITmeas.EngMdl_ratNOx_PHY              = 'ppm';
+elseif isfield(MEAStest, 'EM_NOX_1')
+    MEAStest.Exh_rNOxNSCDs                  = MEAStest.EM_NOX_1;
+    UNITmeas.Exh_rNOxNSCDs                  = 'ppm';
+    MEAStest.EngMdl_ratNOx_PHY              = MEAStest.Exh_rNOxNSCDs;
+    UNITmeas.EngMdl_ratNOx_PHY              = 'ppm';
 end
 % Nox2
 if isfield(MEAStest, 'Exh_rNOxNoCat2Ds')
+    MEAStest.ExhATSysMdl_ratNoxSnsrDs_PHY	= MEAStest.Exh_rNOxNoCat2Ds;
+    UNITmeas.ExhATSysMdl_ratNoxSnsrDs_PHY	= 'ppm';
+elseif isfield(MEAStest, 'EM_NOX_2')
+    MEAStest.Exh_rNOxNoCat2Ds           	= MEAStest.EM_NOX_2;
+    UNITmeas.Exh_rNOxNoCat2Ds             	= 'ppm';
     MEAStest.ExhATSysMdl_ratNoxSnsrDs_PHY	= MEAStest.Exh_rNOxNoCat2Ds;
     UNITmeas.ExhATSysMdl_ratNoxSnsrDs_PHY	= 'ppm';
 end
