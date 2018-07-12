@@ -19,7 +19,7 @@ set_param(SimModelName(1:end-4), 'DataLoggingOverride', mi);
 Options.LoadRefCycle	= 1;
 if Options.LoadRefCycle
     [RefCycle_fname, RefCycle_path] = uigetfile({'*.mat';'*.xlsx'}, 'Load Reference Cycle Data File');
-    if strcmp(RefCycle_fname(end-4:end), '.xlsx')
+    if strcmp(lower(RefCycle_fname(end-3:end)), '.xlsx')
         [ndata, headertext]             = xlsread(fullfile(RefCycle_path,RefCycle_fname));
         [data_size variable_size]       = size(headertext);
         for i = 1:variable_size
@@ -27,13 +27,42 @@ if Options.LoadRefCycle
             field_name              = strrep(field_name, ' ', '_');
             REFcycle.(field_name)	= ndata(:,i);
         end
-    elseif strcmp(RefCycle_fname(end-3:end), '.mat')
+    elseif strcmp(lower(RefCycle_fname(end-3:end)), '.mat')
         DUMMY       = load(fullfile(RefCycle_path,RefCycle_fname));
         REFcycle    = DUMMY.TEST;
     end
+    if ~isfield(REFcycle, 'numEOM')
+        REFcycle.numEOM = DUMMY.TEST.CoEOM_numOpModeAct;
+        ind = find((REFcycle.numEOM < 0.5));
+        REFcycle.numEOM(ind)	= 0; % 'Normal'
+        ind = find((REFcycle.numEOM > 0.5) & (REFcycle.numEOM < 1.5));
+        REFcycle.numEOM(ind)  = 1; % 'PFlt_Rgn1'
+        ind = find((REFcycle.numEOM > 1.5) & (REFcycle.numEOM < 2.5));
+        REFcycle.numEOM(ind)  = 2; % 'PFlt_Rgn2'
+        ind = find((REFcycle.numEOM > 5.5) & (REFcycle.numEOM < 6.5));
+        REFcycle.numEOM(ind)  = 3; % 'CldStrt'
+        ind = find((REFcycle.numEOM > 6.5) & (REFcycle.numEOM < 7.5));
+        REFcycle.numEOM(ind)  = 4; % 'EGTM'
+        ind = find((REFcycle.numEOM > 7.5) & (REFcycle.numEOM < 8.5));
+        REFcycle.numEOM(ind)  = 0; % ??? 'EngStrt'
+        ind = find((REFcycle.numEOM > 10.5));
+        REFcycle.numEOM(ind)  = 5; % 'EngBrk'
+    end
+    if ~isfield(REFcycle, 'Time')
+        if isfield(REFcycle, 'time')
+            REFcycle.Time = REFcycle.time;
+        end
+    end
+    % Disable dyno mode
+	open_system('Virtual_Engine_Dynamometer.slx');
+    DynoSwitchElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'swtDynoActvd');
+    set_param(DynoSwitchElement, 'Value', '0'); % '0' - Disable, '1' - Enable
+    DynoModeElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'numDynoMod');
+    set_param(DynoModeElement, 'Value', '1'); % '1' - Speed/Pedal Mode, '2' - Speed/Torque Mode
+    close_system('Virtual_Engine_Dynamometer.slx', 1);% Save and Close
     % Overwrite to gui_data
-    gui_data.RoadGradeInfo.Indx         = 3;
-    gui_data.RouteInfo.Filetype         = 2; % 1: Distance Based (vVeh_Ref), 2: Time Based (vVeh_Ref) (if starts with 1 - shifted vVeh_Ref trace) 
+    gui_data.RoadGradeInfo.Indx         = 4; % 1: Constant (Grade_Ref), 2: Function (Grade_Ref), 3: Distance Based (Grade_Ref), 4: Time Based (Grade_Ref)
+    gui_data.RouteInfo.Filetype         = 2; % 1: Distance Based (vVeh_Ref), 2: Time Based (vVeh_Ref) (if starts with 1 - shifted vVeh_Ref trace)
     gui_data.RouteInfo.Distance         = REFcycle.Distance;
     gui_data.RouteInfo.Speed            = REFcycle.Velocity;
     gui_data.RouteInfo.Grade            = REFcycle.Grade;
@@ -41,7 +70,7 @@ if Options.LoadRefCycle
     gui_data.RouteInfo.Wind             = 0*gui_data.RouteInfo.Speed;
     gui_data.RouteInfo.Total_Distance	= gui_data.RouteInfo.Distance(end);
     gui_data.RouteInfo.Total_Duration   = REFcycle.Time(end);
-    gui_data.RouteInfo.Speed(1)         = max(gui_data.RouteInfo.Speed(1), 1); % !!!  Critial (if starts with 0 - delayed launch)  
+    gui_data.RouteInfo.Speed(1)         = max(gui_data.RouteInfo.Speed(1), 1); % !!!  Critial (if starts with 0 - delayed launch)
 end
 %% Run Simulation
 % SimStart&FinishTime
@@ -76,6 +105,18 @@ else
 end
 % Setting of initial values of Delay blocks inside DataBus subsystem ('Test_Configuration.slx' model outputs) (tIniUreaCat & mIniNh3LoadUreaCat)
 open_system('Test_Configuration.slx');
+% Initial ATS temperatures & load
+tInitStr        = num2str(170); % 255
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDOCUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDOCUs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDPFUs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFDs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDPFDs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniASCUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniASCUs
+loadInitElement	= find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'mIniNh3LoadUreaCat');
+set_param(loadInitElement, 'Value', '10e-3'); % mIniNh3LoadUreaCat
 TstCfgOutElements   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Outport');
 for i = 1:numel(TstCfgOutElements)
     TstCfgOut.Names{i,1}    = get_param(TstCfgOutElements(i), 'Name');
@@ -92,7 +133,7 @@ for i = 1:numel(DelayElements)
         end
     end
 end
-close_system('Test_Configuration.slx');
+close_system('Test_Configuration.slx',1);% Save and Close
 % Sim Mode
 SimModeInd      = 2;
 if SimModeInd ==  1
@@ -106,7 +147,7 @@ HandleWaitBar        	= waitbar(0,'Please wait...');
 TimerObj                = timer;
 TimerObj.Period         = 10; % Display every 10 seconds
 TimerObj.ExecutionMode	= 'fixedRate';
-TimerObj.TimerFcn       = @(mytimerObj, thisEvent)waitbar(get_param(SimModelName(1:end-4), 'SimulationTime')/SimStopTime, HandleWaitBar);
+TimerObj.TimerFcn       = @(mytimerObj, thisEvent)waitbar((get_param(SimModelName(1:end-4), 'SimulationTime')-SimStartTime)/(SimStopTime-SimStartTime), HandleWaitBar);
 start(TimerObj);
 tic;
 if SimStartTime > 0
@@ -128,9 +169,9 @@ if Options.load_previousSimData
 end
 [SIMtest, UNITsim, MEAStest, UNITmeas] = CollectSimulationData(simOut, optiTruck_physical_Bus, Options);
 DATA        = PreProcess_PlotGUI(SIMtest, UNITsim, MEAStest, UNITmeas);
-Plot_GUI	= GeneratePlotGUI(DATA, Options.test_type);
+DATA      	= CalculateCumulativeSignals(DATA, SimStartTime, SimStopTime);
+Plot_GUI  	= GeneratePlotGUI(DATA, Options.test_type);
 METRICS     = CalculateMetrics(DATA);
-DATAadd     = CalculateAdditionalSignals(DATA, SimStartTime, SimStopTime);
-save(['OptiTruck_Simulation_',datestr(now,'yyyymmdd'),'.mat'], 'DATA', 'DATAadd','SimStartTime', 'SimStopTime', 'Options', 'optiTruck_physical_Bus', 'optiTruck_Cloud_Bus','optiTruck_Vehicle_Bus', '-v7.3');
+save(['OptiTruck_Simulation_',datestr(now,'yyyymmdd'),'.mat'], 'DATA','SimStartTime', 'SimStopTime', 'Options', 'optiTruck_physical_Bus', 'optiTruck_Cloud_Bus','optiTruck_Vehicle_Bus', '-v7.3');
 %% Plot Results
 PlotDefaultSimResults;
