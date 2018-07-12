@@ -5,11 +5,11 @@ AxesHandle.(FigName).AX(1) = subplot('Position', [0.04 0.54, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumFuelFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -19,11 +19,11 @@ AxesHandle.(FigName).AX(2) = subplot('Position', [0.37 0.54, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumEngPwr';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -32,7 +32,7 @@ ylabel(['Cumulative ', pltLabel(4:end)], 'FontSize', 12, 'FontWeight', 'Bold');
 subplot('Position', [0.70 0.54, 0.28, 0.43]);
 hold on;grid minor;
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Data, DATA.MEAS.TEST.PthSet_trqInrSet.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Data, DATA.MEAS.TEST.PthSet_trqInrSet.Data, 'r*', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
@@ -88,12 +88,12 @@ ylim([0 15]);
 linkaxes(AxesHandle.(FigName).AX,'x');
 %% Cumulative fuel rate
 if Options.ena_comparison
-    CumFuel_sim_CommonTime	= interp1(DATA.SIM.TEST.ECU_qInjTot_PHY.Time, DATAadd.SIM.TEST.CumFuelFlow, DATA.MEAS.TEST.InjSys_qTot.Time);
+    CumFuel_sim_CommonTime	= interp1(DATA.SIM.TEST.ECU_qInjTot_PHY.Time, DATA.SIM.TEST.CumFuelFlow.Data, DATA.MEAS.TEST.InjSys_qTot.Time);
     FigName = 'CumFuelFlowRate';
     figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
     AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
     hold on;grid minor;
-    plot(DATA.MEAS.TEST.InjSys_qTot.Time, DATAadd.MEAS.TEST.CumFuelFlow./CumFuel_sim_CommonTime*100, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.InjSys_qTot.Time, DATA.MEAS.TEST.CumFuelFlow.Data./CumFuel_sim_CommonTime*100, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
     plot(DATA.MEAS.TEST.InjSys_qTot.Time, DATA.MEAS.TEST.InjSys_qTot.Time*0+100, 'b:', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
     set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
     legend('Real/Sim cumFuel [%]', 'Ideal Rate [%]');
@@ -230,18 +230,18 @@ AxesHandle.(FigName).AX(1) = subplot('Position', [0.04 0.54, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumAirFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 pltLabel = 'CumExhFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.0 0.8 0.1], 'LineWidth',2);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.0 0.8 0.1], 'LineWidth',2);
 else
     plot(0, 0, 'r', 'Color', [0.0 0.8 0.1], 'LineWidth',2);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [1.0 0.4 0.0], 'LineWidth',2);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [1.0 0.4 0.0], 'LineWidth',2);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 % legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 legend('Real cumAirFlow', 'Sim cumAirFlow', 'Real CumExhFlow', 'Sim CumExhFlow');
@@ -253,11 +253,11 @@ AxesHandle.(FigName).AX(2) = subplot('Position', [0.37 0.54, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumFuelFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -267,11 +267,11 @@ AxesHandle.(FigName).AX(3) = subplot('Position', [0.70 0.54, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumEngSpd';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -281,18 +281,18 @@ AxesHandle.(FigName).AX(4) = subplot('Position', [0.04 0.07, 0.28, 0.40]);
 hold on;grid minor;
 pltLabel = 'CumPInManRef';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
 else
     plot(0, 0, 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b-.', 'Color', [0.0 0.8 0.1], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b-.', 'Color', [0.0 0.8 0.1], 'LineWidth',3);
 pltLabel = 'CumPInMan';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'Color', [0.0 0.5 0.8], 'LineWidth',2);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'Color', [0.0 0.5 0.8], 'LineWidth',2);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend('Real CumPInMan Ref', 'Sim CumPInMan Ref','Real CumPInMan', 'Sim CumPInMan');
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -302,18 +302,18 @@ AxesHandle.(FigName).AX(5) = subplot('Position', [0.37 0.07, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumAirFlowRef';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
 else
     plot(0, 0, 'r-.', 'Color', [1.0 0.4 0.0], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b-.', 'Color', [0.0 0.8 0.1], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b-.', 'Color', [0.0 0.8 0.1], 'LineWidth',3);
 pltLabel = 'CumAirFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',2);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'Color', [0.0 0.5 0.8], 'LineWidth',2);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'Color', [0.0 0.5 0.8], 'LineWidth',2);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend('Real CumAirFlow Ref', 'Sim CumAirFlow Ref','Real CumAirFlow', 'Sim CumAirFlow');
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -323,11 +323,11 @@ AxesHandle.(FigName).AX(6) = subplot('Position', [0.70 0.07, 0.28, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumIndTrq';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -335,6 +335,33 @@ ylabel(['Cumulative ', pltLabel(4:end)], 'FontSize', 12, 'FontWeight', 'Bold');
 
 linkaxes(AxesHandle.(FigName).AX,'x');
 xlim([DATA.SIM.TEST.Time.TimeInfo.Start, DATA.SIM.TEST.Time.TimeInfo.End]);
+%% Cumulative Airpath Ref Rate
+if Options.ena_comparison
+    CumAirFlowRef_sim_CommonTime	= interp1(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.CumAirFlowRef.Data, DATA.MEAS.TEST.CumAirFlowRef.Time);
+    CumPInManRef_sim_CommonTime     = interp1(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.CumPInManRef.Data, DATA.MEAS.TEST.CumPInManRef.Time);
+    FigName = 'APctrl_RefRate';
+    figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
+    AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.56, 0.90, 0.42]);
+    hold on;grid minor;
+    plot(DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.MEAS.TEST.CumAirFlowRef.Data./CumAirFlowRef_sim_CommonTime*100, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time*0+100, 'b:', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+    set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
+    legend('Real/Sim CumAirFlowRef [%]', 'Ideal Rate [%]');
+    xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
+    ylabel('Cumulative Airflow Ref Rate [%]', 'FontSize', 12, 'FontWeight', 'Bold');
+    ylim([80 120]);
+    AxesHandle.(FigName).AX(2) = subplot('Position', [0.06 0.07, 0.90, 0.42]);
+    hold on;grid minor;
+    plot(DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.MEAS.TEST.CumPInManRef.Data./CumPInManRef_sim_CommonTime*100, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.MEAS.TEST.TrsmMdl_nCrksft_PHY.Time*0+100, 'b:', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+    set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
+    legend('Real/Sim CumPInManRef [%]', 'Ideal Rate [%]');
+    xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
+    ylabel('Cumulative PInMan Ref Rate [%]', 'FontSize', 12, 'FontWeight', 'Bold');
+    ylim([80 120]);
+    linkaxes(AxesHandle.(FigName).AX,'x');
+    xlim([DATA.SIM.TEST.Time.TimeInfo.Start, DATA.SIM.TEST.Time.TimeInfo.End]);
+end
 %% VGT_EGR
 FigName = 'AirPath_Vlv';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -359,11 +386,11 @@ AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.54, 0.43, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumEngOutNoxFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -373,11 +400,11 @@ AxesHandle.(FigName).AX(2) = subplot('Position', [0.54 0.54, 0.43, 0.43]);
 hold on;grid minor;
 pltLabel = 'CumScrOutNoxFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
@@ -387,11 +414,11 @@ AxesHandle.(FigName).AX(3) = subplot('Position', [0.06 0.07, 0.43, 0.40]);
 hold on;grid minor;
 pltLabel = 'CumUreaFlow';
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.EngSpeed.Time, DATAadd.MEAS.TEST.(pltLabel), 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.(pltLabel).Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
-plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATAadd.SIM.TEST.(pltLabel), 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+plot(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.(pltLabel).Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
