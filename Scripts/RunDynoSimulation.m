@@ -48,18 +48,47 @@ if Options.LoadRefCycle
         ind = find((REFcycle.numEOM > 10.5));
         REFcycle.numEOM(ind)  = 5; % 'EngBrk'
     end
-    % Overwrite to dyno_data
+    if ~isfield(REFcycle, 'Time')
+        if isfield(REFcycle, 'time')
+            REFcycle.Time = REFcycle.time;
+        end
+    end
+    if ~isfield(REFcycle, 'EngSpeed')
+        if isfield(REFcycle, 'SPEED')
+            REFcycle.EngSpeed = REFcycle.SPEED;
+        elseif isfield(REFcycle, 'Epm_nEng')
+            REFcycle.EngSpeed = REFcycle.Epm_nEng;
+        end
+    end
+    if ~isfield(REFcycle, 'AccrPedlPosn')
+        if isfield(REFcycle, 'ALPHA')
+            REFcycle.AccrPedlPosn = REFcycle.ALPHA;
+        elseif isfield(REFcycle, 'AccelPedalPos1')
+            REFcycle.AccrPedlPosn = REFcycle.AccelPedalPos1;
+        elseif isfield(REFcycle, 'APP_r')
+            REFcycle.AccrPedlPosn = REFcycle.ALPHA;
+        end
+    end
+    if ~isfield(REFcycle, 'EngTorque')
+        if isfield(REFcycle, 'TORQUE')
+            REFcycle.EngTorque = REFcycle.TORQUE;
+        elseif isfield(REFcycle, 'ActMod_trqCrS')
+            REFcycle.EngTorque = REFcycle.ActMod_trqCrS;
+        end
+    end
+    % Enable Dyno Mode
     open_system('Virtual_Engine_Dynamometer.slx');
     DynoSwitchElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'swtDynoActvd');
     set_param(DynoSwitchElement, 'Value', '1'); % '0' - Disable, '1' - Enable
     DynoModeElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'numDynoMod');
-    set_param(DynoModeElement, 'Value', '1'); % '1' - Speed/Pedal Mode, '2' - Speed/Torque Mode
+    set_param(DynoModeElement, 'Value', '2'); % '1' - Speed/Pedal Mode, '2' - Speed/Torque Mode
     close_system('Virtual_Engine_Dynamometer.slx', 1);% Save and Close
+    % Overwrite to dyno_data
     dyno_data.CycleInfo.Indx            = 1;% 0: Constant References, 1: References from a cycle
     dyno_data.CycleInfo.Time            = REFcycle.Time - REFcycle.Time(1);
-    dyno_data.CycleInfo.EngSpeed        = REFcycle.EngSpeed;        % REFcycle.Epm_nEng;
-    dyno_data.CycleInfo.AccrPedlPosn    = REFcycle.AccrPedlPosn;    % REFcycle.ALPHA;
-    dyno_data.CycleInfo.EngTorque       = REFcycle.EngTorque;       % REFcycle.TORQUE;
+    dyno_data.CycleInfo.EngSpeed        = REFcycle.EngSpeed;
+    dyno_data.CycleInfo.AccrPedlPosn    = REFcycle.AccrPedlPosn;
+    dyno_data.CycleInfo.EngTorque       = REFcycle.EngTorque;
 end
 %% Run Simulation
 % SimStart&FinishTime
@@ -95,15 +124,16 @@ end
 % Setting of initial values of Delay blocks inside DataBus subsystem ('Test_Configuration.slx' model outputs) (tIniUreaCat & mIniNh3LoadUreaCat)
 open_system('Test_Configuration.slx');
 % Initial ATS temperatures & load
-tInitElement   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDOCUs');
-set_param(tInitElement, 'Value', '255'); % tIniDOCUs
-tInitElement   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFUs');
-set_param(tInitElement, 'Value', '255'); % tIniDPFUs
-tInitElement   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFDs');
-set_param(tInitElement, 'Value', '255'); % tIniDPFDs
-tInitElement   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniASCUs');
-set_param(tInitElement, 'Value', '255'); % tIniASCUs
-loadInitElement   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'mIniNh3LoadUreaCat');
+tInitStr        = num2str(170); % 255
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDOCUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDOCUs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDPFUs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFDs');
+set_param(tInitElement, 'Value', tInitStr); % tIniDPFDs
+tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniASCUs');
+set_param(tInitElement, 'Value', tInitStr); % tIniASCUs
+loadInitElement	= find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'mIniNh3LoadUreaCat');
 set_param(loadInitElement, 'Value', '10e-3'); % mIniNh3LoadUreaCat
 TstCfgOutElements   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Outport');
 for i = 1:numel(TstCfgOutElements)
@@ -135,7 +165,7 @@ HandleWaitBar        	= waitbar(0,'Please wait...');
 TimerObj                = timer;
 TimerObj.Period         = 10; % Display every 10 seconds
 TimerObj.ExecutionMode	= 'fixedRate';
-TimerObj.TimerFcn       = @(mytimerObj, thisEvent)waitbar(get_param(SimModelName(1:end-4), 'SimulationTime')/SimStopTime, HandleWaitBar);
+TimerObj.TimerFcn       = @(mytimerObj, thisEvent)waitbar((get_param(SimModelName(1:end-4), 'SimulationTime')-SimStartTime)/(SimStopTime-SimStartTime), HandleWaitBar);
 start(TimerObj);
 tic;
 if SimStartTime > 0
@@ -157,11 +187,11 @@ if Options.load_previousSimData
 end
 [SIMtest, UNITsim, MEAStest, UNITmeas] = CollectSimulationData(simOut, optiTruck_physical_Bus, Options);
 DATA        = PreProcess_PlotGUI(SIMtest, UNITsim, MEAStest, UNITmeas);
-Plot_GUI	= GeneratePlotGUI(DATA, Options.test_type);
+DATA      	= CalculateCumulativeSignals(DATA, SimStartTime, SimStopTime);
+Plot_GUI  	= GeneratePlotGUI(DATA, Options.test_type);
 if 0 % Disabled for Dyno Simulation
     METRICS	= CalculateMetrics(DATA);
 end
-DATAadd     = CalculateAdditionalSignals(DATA, SimStartTime, SimStopTime);
-save(['OptiTruck_DynoSimulation_',datestr(now,'yyyymmdd'),'.mat'], 'DATA', 'DATAadd','SimStartTime', 'SimStopTime', 'Options', 'optiTruck_physical_Bus', 'optiTruck_Cloud_Bus','optiTruck_Vehicle_Bus', '-v7.3');
+save(['OptiTruck_DynoSimulation_',datestr(now,'yyyymmdd'),'.mat'], 'DATA','SimStartTime', 'SimStopTime', 'Options', 'optiTruck_physical_Bus', 'optiTruck_Cloud_Bus','optiTruck_Vehicle_Bus', '-v7.3');
 %% Plot Results
 PlotDefaultSimResults;
