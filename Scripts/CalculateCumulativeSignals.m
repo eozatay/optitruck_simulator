@@ -146,6 +146,15 @@ if ~isempty(DATA.MEAS.TEST.Time) % If MEAS Data exists
     DATA.MEAS.UNIT.CumScrOutNoxFlow_ppm                 = 'int([ppm])';
     DATA.MEAS.UNIT.CumScrOutNoxFlow_ppm_OnlySim        	= 'int([ppm])';
     DATA.MEAS.TEST.ScrOutNoxFlow_ppm.Data               = max(DATA.MEAS.TEST.Exh_rNOxNoCat2Ds.Data, 0); % ppm
+    InitNoxSnsInd                                       = find(DATA.MEAS.TEST.ScrOutNoxFlow_ppm.Data > 0, 1, 'First');
+    InitNoxSnsTime                                      = DATA.MEAS.TEST.ScrOutNoxFlow_ppm.Time(InitNoxSnsInd);
+    % Disabling Simulation Nox & Urea Values to be able to compare real world data (due Nox senor behaviour)
+    EnaNoxSnsInit                                       = 1;
+    if EnaNoxSnsInit
+        InitNoxSnsSimInd                                = find(DATA.SIM.TEST.ScrOutNoxFlow_ppm.Time >= InitNoxSnsTime, 1, 'First');
+        DATA.SIM.TEST.ScrOutNoxFlow_ppm.Data(1:InitNoxSnsSimInd-1)	= 0; % Due to Sensor behaviour
+        DATA.SIM.TEST.CumScrOutNoxFlow_ppm.Data         = cumtrapz(DATA.SIM.TEST.ExhATSysMdl_ratNoxSnsrDs_PHY.Time, DATA.SIM.TEST.ScrOutNoxFlow_ppm.Data);
+    end
     DATA.MEAS.TEST.CumScrOutNoxFlow_ppm.Data            = cumtrapz(DATA.MEAS.TEST.Exh_rNOxNoCat2Ds.Time, DATA.MEAS.TEST.ScrOutNoxFlow_ppm.Data);
     DATA.Metrics.PrcCumScrOutNoxFlow_ppm                = DATA.MEAS.TEST.CumScrOutNoxFlow_ppm.Data(end) / DATA.SIM.TEST.CumScrOutNoxFlow_ppm.Data(end)*100;
     Data                                                = cumtrapz(DATA.MEAS.TEST.Exh_rNOxNoCat2Ds.Time(SimIndStart:SimIndStop), DATA.MEAS.TEST.ScrOutNoxFlow_ppm.Data(SimIndStart:SimIndStop));
@@ -171,6 +180,10 @@ if ~isempty(DATA.MEAS.TEST.Time) % If MEAS Data exists
     DATA.MEAS.UNIT.CumScrOutNoxFlow                 = 'int([g/h])';
     DATA.MEAS.UNIT.CumScrOutNoxFlow_OnlySim       	= 'int([g/h])';
     DATA.MEAS.TEST.ScrOutNoxFlow.Data               = 0.001586 * (DATA.MEAS.TEST.AFS_dm.Data + DATA.MEAS.TEST.FuelFlow.Data)/3600 .* max(DATA.MEAS.TEST.Exh_rNOxNoCat2Ds.Data, 0) * 3600; % ppm to [g/h]
+    if EnaNoxSnsInit
+        DATA.SIM.TEST.ScrOutNoxFlow.Data(1:InitNoxSnsSimInd-1)	= 0; % Due to Sensor behaviour
+        DATA.SIM.TEST.CumScrOutNoxFlow.Data         = cumtrapz(DATA.SIM.TEST.TrsmMdl_nCrksft_PHY.Time, DATA.SIM.TEST.ScrOutNoxFlow.Data);
+    end
     DATA.MEAS.TEST.CumScrOutNoxFlow.Data            = cumtrapz(DATA.MEAS.TEST.EngSpeed.Time, DATA.MEAS.TEST.ScrOutNoxFlow.Data);
     DATA.Metrics.PrcCumScrOutNoxFlow                = DATA.MEAS.TEST.CumScrOutNoxFlow.Data(end) / DATA.SIM.TEST.CumScrOutNoxFlow.Data(end)*100;
     Data                                            = cumtrapz(DATA.MEAS.TEST.EngSpeed.Time(SimIndStart:SimIndStop), DATA.MEAS.TEST.ScrOutNoxFlow.Data(SimIndStart:SimIndStop));
@@ -183,6 +196,10 @@ if ~isempty(DATA.MEAS.TEST.Time) % If MEAS Data exists
     DATA.MEAS.UNIT.CumUreaFlow                  = 'int([kg/sec])';
     DATA.MEAS.UNIT.CumUreaFlow_OnlySim      	= 'int([kg/sec])';
     DATA.MEAS.TEST.UreaFlow.Data                = DATA.MEAS.TEST.DStgy_dmRdcAgAct.Data;
+    if 0%EnaNoxSnsInit
+        DATA.SIM.TEST.UreaFlow.Data(1:InitNoxSnsSimInd-1)	= 0; % Due to Sensor behaviour
+        DATA.SIM.TEST.CumUreaFlow.Data        	= cumtrapz(DATA.SIM.TEST.ECU_mflUreaDes_PHY.Time, DATA.SIM.TEST.UreaFlow.Data);
+    end
     DATA.MEAS.TEST.CumUreaFlow.Data             = cumtrapz(DATA.MEAS.TEST.DStgy_dmRdcAgAct.Time, DATA.MEAS.TEST.UreaFlow.Data);
     DATA.Metrics.PrcCumUreaFlow                 = DATA.MEAS.TEST.CumUreaFlow.Data(end) / DATA.SIM.TEST.CumUreaFlow.Data(end)*100;
     Data                                        = cumtrapz(DATA.MEAS.TEST.DStgy_dmRdcAgAct.Time(SimIndStart:SimIndStop), DATA.MEAS.TEST.UreaFlow.Data(SimIndStart:SimIndStop));
