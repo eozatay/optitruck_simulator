@@ -427,14 +427,15 @@ ylabel(['Cumulative ', pltLabel(4:end)], 'FontSize', 12, 'FontWeight', 'Bold');
 AxesHandle.(FigName).AX(4) = subplot('Position', [0.54 0.07, 0.43, 0.40]);
 hold on;grid minor;
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.SCRT_tAvrg.Time, DATA.MEAS.TEST.SCRT_tAvrg.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    plot(DATA.MEAS.TEST.SCR_tUCatUsT.Time, DATA.MEAS.TEST.SCR_tUCatUsT.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
 plot(DATA.SIM.TEST.ExhATSysMdl_tPMFilDs_PHY.Time, DATA.SIM.TEST.ExhATSysMdl_tPMFilDs_PHY.Data, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
-plot(DATA.SIM.TEST.ExhATSysMdl_tASCDs_PHY.Time, DATA.SIM.TEST.ExhATSysMdl_tASCDs_PHY.Data, 'b', 'Color', [0.0 0.7 0.5], 'LineWidth',3);
+% plot(DATA.SIM.TEST.ExhATSysMdl_tASCDs_PHY.Time, DATA.SIM.TEST.ExhATSysMdl_tASCDs_PHY.Data, 'b', 'Color', [0.0 0.7 0.5], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
-legend('Real Scr Avr Temp', 'Sim Scr In Temp', 'Sim Scr (ASC Out) Temp');
+legend('Real Scr In Temp', 'Sim Scr In Temp');
+% legend('Real Scr Avr Temp', 'Sim Scr In Temp', 'Sim Scr (ASC Out) Temp');
 xlabel('Time', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Scr Temperature', 'FontSize', 12, 'FontWeight', 'Bold');
 
