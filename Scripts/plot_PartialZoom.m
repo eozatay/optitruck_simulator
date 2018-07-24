@@ -11,10 +11,10 @@ if nargin  > 6
     add_newplot  = 1;
 end
 % Size definitions
-normX0              = 0.04;
-normXsize        	= 0.94;
+normX0              = 0.06;
+normXsize        	= 0.90;
 normY0              = 0.07;
-normYsize        	= 0.88;
+normYsize        	= 0.90;
 % Plotting to get ylim
 FirstPlotName = 'PrePlot';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FirstPlotName);
