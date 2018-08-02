@@ -1,3 +1,15 @@
+% Search current path and add new path
+mfile_Name      = mfilename;
+mfile_FullPath  = mfilename('fullpath');
+mfile_Path      = mfile_FullPath(1:end-numel(mfile_Name)-1);
+UpperFolderName = mfile_Path;
+indUpper        = strfind(UpperFolderName, '\');
+UpperFolderName = UpperFolderName(1:indUpper(end)-1);
+% Create RefMdlPath directory
+ReportFolder    = [UpperFolderName, '\Report'];
+if ~isdir(ReportFolder)
+    mkdir(ReportFolder);
+end
 %% 1-Slope
 FigName = 'Slope';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -8,6 +20,7 @@ set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend('Road Slope');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Road Slope [%]', 'FontSize', 12, 'FontWeight', 'Bold');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 2-EOM
 FigName = 'EOM';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -18,6 +31,7 @@ set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 legend('EOM');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Engine Operating Mode [-]', 'FontSize', 12, 'FontWeight', 'Bold');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 3-Pedals - Alternative
 FigName = 'DRV';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -52,6 +66,7 @@ pltLabel = 'Vehicle Speed';
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Vehicle Speed [km/h]', 'FontSize', 12, 'FontWeight', 'Bold');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 3-Engine Speed
 FigName = 'EngSpd';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -64,6 +79,7 @@ pltLabel = 'Engine Speed';
 legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Engine Speed [Rpm]', 'FontSize', 12, 'FontWeight', 'Bold');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 4-Gear
 FigName = 'Gear';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
@@ -77,6 +93,7 @@ legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Gear [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 13]);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 5-Cumulative Engine Power
 NormScale = 4.51e5;
 FigName = 'CumPwr';
@@ -87,11 +104,13 @@ plot(DATA.MEAS.TEST.CumEngPwr.Time, DATA.MEAS.TEST.CumEngPwr.Data/NormScale, 'r'
 plot(DATA.SIM.TEST.CumEngPwr.Time, DATA.SIM.TEST.CumEngPwr.Data/NormScale, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 pltLabel = 'Cumulative Engine Power';
-legend(['Real ', pltLabel], ['Sim ', pltLabel]);
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Cumulative Engine Power [-]', 'FontSize', 12, 'FontWeight', 'Bold');
+TxtHnd = text(2700,0.975,['Delta : % ', num2str(100 - DATA.Metrics.PrcCumEngPwr, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 6-Cumulative Fuel Flow
-NormScale = 6.29e4;
+NormScale = 6.33e4;
 FigName = 'CumFuel';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
 AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
@@ -100,9 +119,11 @@ plot(DATA.MEAS.TEST.CumFuelFlow.Time, DATA.MEAS.TEST.CumFuelFlow.Data/NormScale,
 plot(DATA.SIM.TEST.CumFuelFlow.Time, DATA.SIM.TEST.CumFuelFlow.Data/NormScale, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 pltLabel = 'Cumulative Fuel';
-legend(['Real ', pltLabel], ['Sim ', pltLabel]);
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Cumulative Fuel [-]', 'FontSize', 12, 'FontWeight', 'Bold');
+TxtHnd = text(2700,0.975,['Delta : % ', num2str(100 - DATA.Metrics.PrcCumFuelFlow, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 7-Boost Pressure
 NormScale   = 3e3;
 NormX0      = 1e3;
@@ -150,6 +171,7 @@ LgdStr{1}  	= ['Real ', strrep(meas_label, '_', '\_')];
 LgdStr{2}   = ['Sim ', strrep(sim_label, '_', '\_')];
 legend(AxesHandle.(FigName).AX(1), 'off');
 legend(AxesHandle.(FigName).AX(2), LgdStr, 'Location','northwest');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 8-Airflow
 NormScale   = 1800;
 NormX0      = 0;
@@ -197,6 +219,7 @@ LgdStr{1}  	= ['Real ', strrep(meas_label, '_', '\_')];
 LgdStr{2}   = ['Sim ', strrep(sim_label, '_', '\_')];
 legend(AxesHandle.(FigName).AX(1), 'off');
 legend(AxesHandle.(FigName).AX(2), LgdStr, 'Location','northwest');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 9-Boost Pressure Control
 NormScale   = 3e3;
 NormX0      = 1e3;
@@ -244,6 +267,7 @@ LgdStr{1}  	= ['Sim ', strrep(meas_label, '_', '\_')];
 LgdStr{2}   = ['Sim ', strrep(sim_label, '_', '\_')];
 legend(AxesHandle.(FigName).AX(1), 'off');
 legend(AxesHandle.(FigName).AX(2), LgdStr, 'Location','northwest');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 10-Airflow Control
 NormScale   = 1800;
 NormX0      = 0;
@@ -291,6 +315,7 @@ LgdStr{1}  	= ['Sim ', strrep(meas_label, '_', '\_')];
 LgdStr{2}   = ['Sim ', strrep(sim_label, '_', '\_')];
 legend(AxesHandle.(FigName).AX(1), 'off');
 legend(AxesHandle.(FigName).AX(2), LgdStr, 'Location','northwest');
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 11-ExhTemp
 NormScale   = 500;
 NormX0      = 0;
@@ -307,8 +332,9 @@ legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Exhaust Temperature [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 1]);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 12-Cumulative Nox Flow (Engine Out)
-NormScale   = 3.02e6;
+NormScale   = 2.801e6;
 FigName = 'CumNox_EngOut';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
 AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
@@ -317,10 +343,12 @@ plot(DATA.MEAS.TEST.CumEngOutNoxFlow.Time, DATA.MEAS.TEST.CumEngOutNoxFlow.Data/
 plot(DATA.SIM.TEST.CumEngOutNoxFlow.Time, DATA.SIM.TEST.CumEngOutNoxFlow.Data/NormScale, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 pltLabel = 'Cumulative Engine Out Nox';
-legend(['Real ', pltLabel], ['Sim ', pltLabel]);
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Cumulative Engine Out Nox [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 1]);
+TxtHnd = text(2650,0.975,['Delta : % ', num2str(100 - DATA.Metrics.PrcCumEngOutNoxFlow, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 13-ScrTemp
 NormScale   = 500;
 NormX0      = 0;
@@ -336,8 +364,9 @@ legend(['Real ', pltLabel], ['Sim ', pltLabel]);
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Scr Temperature [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 1]);
+savefig([ReportFolder, '\', FigName, '.fig'])
 %% 14-Cumulative Nox Flow (Scr Out)
-NormScale   = 1.43e6;
+NormScale   = 2.7e4;
 FigName = 'CumNox_ScrOut';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
 AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
@@ -346,12 +375,14 @@ plot(DATA.MEAS.TEST.CumScrOutNoxFlow.Time, DATA.MEAS.TEST.CumScrOutNoxFlow.Data/
 plot(DATA.SIM.TEST.CumScrOutNoxFlow.Time, DATA.SIM.TEST.CumScrOutNoxFlow.Data/NormScale, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 pltLabel = 'Cumulative Tailpipe Nox';
-legend(['Real ', pltLabel], ['Sim ', pltLabel]);
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Cumulative Tailpipe Nox [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 1]);
+TxtHnd = text(2650,0.975,['Delta : % ', num2str(100 - DATA.Metrics.PrcCumScrOutNoxFlow, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
 %% 15-Cumulative Urea Flow
-NormScale   = 15.18e5;
+NormScale   = 15.5e5;
 FigName = 'CumUrea';
 figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
 AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
@@ -360,7 +391,27 @@ plot(DATA.MEAS.TEST.CumUreaFlow.Time, DATA.MEAS.TEST.CumUreaFlow.Data/NormScale,
 plot(DATA.SIM.TEST.CumUreaFlow.Time, DATA.SIM.TEST.CumUreaFlow.Data/NormScale, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
 set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
 pltLabel = 'Cumulative Urea';
-legend(['Real ', pltLabel], ['Sim ', pltLabel]);
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
 xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylabel('Normalized Cumulative Urea [-]', 'FontSize', 12, 'FontWeight', 'Bold');
 ylim([0 1]);
+TxtHnd = text(2650,0.975,['Delta : % ', num2str(100 - DATA.Metrics.PrcCumUreaFlow, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
+%% 16-Scr Conversion Efficiency
+NormScale   = 1;
+FigName = 'CumScr_Eff';
+figure('WindowStyle','Docked','NumberTitle','off','Name',FigName);
+AxesHandle.(FigName).AX(1) = subplot('Position', [0.06 0.07, 0.90, 0.90]);
+hold on;grid on;
+plot(DATA.MEAS.TEST.CumScrOutNoxFlow.Time, (1 - DATA.MEAS.TEST.CumScrOutNoxFlow.Data./DATA.MEAS.TEST.CumEngOutNoxFlow.Data)/NormScale*100, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+plot(DATA.SIM.TEST.CumScrOutNoxFlow.Time, (1 - DATA.SIM.TEST.CumScrOutNoxFlow.Data./DATA.SIM.TEST.CumEngOutNoxFlow.Data)/NormScale*100, 'b', 'Color', [0.0 0.5 0.8], 'LineWidth',3);
+set(gca, 'FontSize', 12, 'FontWeight', 'Bold');
+pltLabel = 'Cumulative Scr Efficiency';
+legend(['Real ', pltLabel], ['Sim ', pltLabel], 'Location', 'east');
+xlabel('Time [sec]', 'FontSize', 12, 'FontWeight', 'Bold');
+ylabel('Cumulative Scr Efficiency [%]', 'FontSize', 12, 'FontWeight', 'Bold');
+ylim([95 100]);
+meas_ScrEff = DATA.MEAS.TEST.CumScrOutNoxFlow.Data(end)./DATA.MEAS.TEST.CumEngOutNoxFlow.Data(end);
+sim_ScrEff = DATA.SIM.TEST.CumScrOutNoxFlow.Data(end)./DATA.SIM.TEST.CumEngOutNoxFlow.Data(end);
+TxtHnd = text(2650,0.995*100,['Delta : % ', num2str((meas_ScrEff - sim_ScrEff)*100, '%4.2f')], 'FontWeight', 'Bold', 'EdgeColor', [0.1 0.1 0.1], 'BackgroundColor', [0.8 0.8 0.8],'LineWidth',1);
+savefig([ReportFolder, '\', FigName, '.fig']);
