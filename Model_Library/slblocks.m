@@ -4,9 +4,10 @@ function blkStruct = slblocks
 		% and be cached in the browser repository
 
 		Browser.Library = 'optiTruck_lib';
-		% 'mylib' is the name of the library
+		% 'optiTruck_lib' is the name of the library
 
 		Browser.Name = 'optiTruck Library';
-		% 'My Library' is the library name that appears in the Library Browser
+		% 'optiTruck Library' is the library name that appears in the Library Browser
 
 		blkStruct.Browser = Browser;
+end
