@@ -47,7 +47,11 @@ ylim([0 3000]);
 AxesHandle.(FigName).AX(3) = subplot('Position', [0.04 0.07, 0.28, 0.40]);
 hold on;grid minor;
 if Options.ena_comparison
-    plot(DATA.MEAS.TEST.WheelBasedVehicleSpeed_CCVS_ECM.Time, DATA.MEAS.TEST.WheelBasedVehicleSpeed_CCVS_ECM.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    if isfield(DATA.MEAS.TEST,'WheelBasedVehicleSpeed_CCVS_ECM')
+        plot(DATA.MEAS.TEST.WheelBasedVehicleSpeed_CCVS_ECM.Time, DATA.MEAS.TEST.WheelBasedVehicleSpeed_CCVS_ECM.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    else
+        plot(DATA.MEAS.TEST.VehV_v.Time, DATA.MEAS.TEST.VehV_v.Data, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
+    end
 else
     plot(0, 0, 'r', 'Color', [0.8 0.1 0.1], 'LineWidth',3);
 end
