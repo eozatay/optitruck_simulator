@@ -246,9 +246,6 @@ end
 if isfield(MEAStest, 'DStgy_dmRdcAgAct') % UDC_dmRdcAgAct
     MEAStest.ECU_mflUreaDes_PHY             = MEAStest.DStgy_dmRdcAgAct/1e6;
     UNITmeas.ECU_mflUreaDes_PHY             = 'kg/sec';
-elseif isfield(MEAStest, 'UDC_dmRdcAgAct')
-    MEAStest.ECU_mflUreaDes_PHY             = MEAStest.UDC_dmRdcAgAct/1e6;
-    UNITmeas.ECU_mflUreaDes_PHY             = 'kg/sec';
 end
 % Slope
 if isfield(MEAStest, 'PreCru_Ctrl_PresentGrade') % UDC_dmRdcAgAct

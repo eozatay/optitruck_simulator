@@ -195,19 +195,14 @@ if ~isempty(DATA.MEAS.TEST.Time) % If MEAS Data exists
     DATA.MEAS.UNIT.UreaFlow                     = '[kg/sec]';
     DATA.MEAS.UNIT.CumUreaFlow                  = 'int([kg/sec])';
     DATA.MEAS.UNIT.CumUreaFlow_OnlySim      	= 'int([kg/sec])';
-    if isfield(DATA.MEAS.TEST, 'DStgy_dmRdcAgAct')
-        UreaFlowLabel                           = 'DStgy_dmRdcAgAct';
-    else
-        UreaFlowLabel                           = 'UDC_dmRdcAgAct';
-    end
-    DATA.MEAS.TEST.UreaFlow.Data                = DATA.MEAS.TEST.(UreaFlowLabel).Data;
+    DATA.MEAS.TEST.UreaFlow.Data                = DATA.MEAS.TEST.DStgy_dmRdcAgAct.Data;
     if 0%EnaNoxSnsInit
         DATA.SIM.TEST.UreaFlow.Data(1:InitNoxSnsSimInd-1)	= 0; % Due to Sensor behaviour
         DATA.SIM.TEST.CumUreaFlow.Data        	= cumtrapz(DATA.SIM.TEST.ECU_mflUreaDes_PHY.Time, DATA.SIM.TEST.UreaFlow.Data);
     end
-    DATA.MEAS.TEST.CumUreaFlow.Data             = cumtrapz(DATA.MEAS.TEST.(UreaFlowLabel).Time, DATA.MEAS.TEST.UreaFlow.Data);
+    DATA.MEAS.TEST.CumUreaFlow.Data             = cumtrapz(DATA.MEAS.TEST.DStgy_dmRdcAgAct.Time, DATA.MEAS.TEST.UreaFlow.Data);
     DATA.Metrics.PrcCumUreaFlow                 = DATA.MEAS.TEST.CumUreaFlow.Data(end) / DATA.SIM.TEST.CumUreaFlow.Data(end)*100;
-    Data                                        = cumtrapz(DATA.MEAS.TEST.(UreaFlowLabel).Time(SimIndStart:SimIndStop), DATA.MEAS.TEST.UreaFlow.Data(SimIndStart:SimIndStop));
+    Data                                        = cumtrapz(DATA.MEAS.TEST.DStgy_dmRdcAgAct.Time(SimIndStart:SimIndStop), DATA.MEAS.TEST.UreaFlow.Data(SimIndStart:SimIndStop));
     DATA.MEAS.TEST.CumUreaFlow_OnlySim          = timeseries(Data, Time_OnlySim);
     % Cumulative Engine Speed
     DATA.MEAS.TEST.CumEngSpd                 	= DATA.MEAS.TEST.EngSpeed; % timeseries definition
