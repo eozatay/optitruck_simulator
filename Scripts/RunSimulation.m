@@ -2,7 +2,7 @@ clear
 clc
 %% Generate simulink model
 RemovePreviousOptiTruckPaths;
-Options.ena_MdlGen             = 1; % Write 0 - if user have generated environment from previous Run
+Options.ena_MdlGen             = 0; % Write 0 - if user have generated environment from previous Run
 if Options.ena_MdlGen
     % Generate Model Environment
     mgt.generateEnvironment('Environment_Specification');
@@ -32,21 +32,9 @@ if Options.LoadRefCycle
         REFcycle    = DUMMY.TEST;
     end
     if ~isfield(REFcycle, 'numEOM')
-        REFcycle.numEOM = DUMMY.TEST.CoEOM_numOpModeAct;
-        ind = find((REFcycle.numEOM < 0.5));
-        REFcycle.numEOM(ind)	= 0; % 'Normal'
-        ind = find((REFcycle.numEOM > 0.5) & (REFcycle.numEOM < 1.5));
-        REFcycle.numEOM(ind)  = 1; % 'PFlt_Rgn1'
-        ind = find((REFcycle.numEOM > 1.5) & (REFcycle.numEOM < 2.5));
-        REFcycle.numEOM(ind)  = 2; % 'PFlt_Rgn2'
-        ind = find((REFcycle.numEOM > 5.5) & (REFcycle.numEOM < 6.5));
-        REFcycle.numEOM(ind)  = 3; % 'CldStrt'
-        ind = find((REFcycle.numEOM > 6.5) & (REFcycle.numEOM < 7.5));
-        REFcycle.numEOM(ind)  = 4; % 'EGTM'
-        ind = find((REFcycle.numEOM > 7.5) & (REFcycle.numEOM < 8.5));
-        REFcycle.numEOM(ind)  = 0; % ??? 'EngStrt'
-        ind = find((REFcycle.numEOM > 10.5));
-        REFcycle.numEOM(ind)  = 5; % 'EngBrk'
+        EOMmap.X        = [0 7 8 11]; % PEMS
+        EOMmap.Y        = [0 4 0 5];
+        REFcycle.numEOM = interp1(EOMmap.X, EOMmap.Y, DUMMY.TEST.CoEOM_numOpModeAct, 'Nearest');
     end
     if ~isfield(REFcycle, 'Time')
         if isfield(REFcycle, 'time')
@@ -71,6 +59,10 @@ if Options.LoadRefCycle
     gui_data.RouteInfo.Total_Distance	= gui_data.RouteInfo.Distance(end);
     gui_data.RouteInfo.Total_Duration   = REFcycle.Time(end);
     gui_data.RouteInfo.Speed(1)         = max(gui_data.RouteInfo.Speed(1), 1); % !!!  Critial (if starts with 0 - delayed launch)
+    CloudRouteSize                      = 10000; % Needs to be changed together with Env_Spec
+    gui_data.CloudRouteInfo.Distance   	= interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),CloudRouteSize)');
+    gui_data.CloudRouteInfo.Speed   	= interp1(REFcycle.Time, REFcycle.Velocity, linspace(0,REFcycle.Time(end),CloudRouteSize)');
+    gui_data.CloudRouteInfo.Power   	= interp1(REFcycle.Time, REFcycle.EngPwr, linspace(0,REFcycle.Time(end),CloudRouteSize)');
 end
 %% Run Simulation
 % SimStart&FinishTime
@@ -88,7 +80,7 @@ if SimStartTime > 0
 end
 open_system(SimModelName);
 % Initial Conditions
-if SimStartTime > 0 % Needs manual setting initial values
+if SimStartTime < 0 % Needs manual setting initial values
     % Delay4:  init vehspeed
     set_param([SimModelName(1:end-4), '/DataBus/Delay4'], 'InitialCondition', '90');
     % Delay44: geardmd
@@ -106,7 +98,7 @@ end
 % Setting of initial values of Delay blocks inside DataBus subsystem ('Test_Configuration.slx' model outputs) (tIniUreaCat & mIniNh3LoadUreaCat)
 open_system('Test_Configuration.slx');
 % Initial ATS temperatures & load
-tInitStr        = num2str(170); % 255
+tInitStr        = num2str(120); % 255
 tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDOCUs');
 set_param(tInitElement, 'Value', tInitStr); % tIniDOCUs
 tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniDPFUs');
@@ -116,7 +108,7 @@ set_param(tInitElement, 'Value', tInitStr); % tIniDPFDs
 tInitElement    = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'tIniASCUs');
 set_param(tInitElement, 'Value', tInitStr); % tIniASCUs
 loadInitElement	= find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'BlockType', 'Constant', 'Name', 'mIniNh3LoadUreaCat');
-set_param(loadInitElement, 'Value', '10e-3'); % mIniNh3LoadUreaCat
+set_param(loadInitElement, 'Value', '24e-3'); % mIniNh3LoadUreaCat
 TstCfgOutElements   = find_system('Test_Configuration', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Outport');
 for i = 1:numel(TstCfgOutElements)
     TstCfgOut.Names{i,1}    = get_param(TstCfgOutElements(i), 'Name');
