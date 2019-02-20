@@ -2,7 +2,7 @@ clear
 clc
 %% Generate simulink model
 RemovePreviousOptiTruckPaths;
-Options.ena_MdlGen             = 0; % Write 0 - if user have generated environment from previous Run
+Options.ena_MdlGen             = 1; % Write 0 - if user have generated environment from previous Run
 if Options.ena_MdlGen
     % Generate Model Environment
     mgt.generateEnvironment('Environment_Specification');
@@ -62,7 +62,7 @@ if Options.LoadRefCycle
     CloudRouteSize                      = 10000; % Needs to be changed together with Env_Spec
     gui_data.CloudRouteInfo.Distance   	= interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),CloudRouteSize)');
     gui_data.CloudRouteInfo.Speed   	= interp1(REFcycle.Time, REFcycle.Velocity, linspace(0,REFcycle.Time(end),CloudRouteSize)');
-    gui_data.CloudRouteInfo.Power   	= interp1(REFcycle.Time, REFcycle.EngPwr, linspace(0,REFcycle.Time(end),CloudRouteSize)');
+    gui_data.CloudRouteInfo.Power   	= interp1(REFcycle.Time, REFcycle.pwrEng, linspace(0,REFcycle.Time(end),CloudRouteSize)');
 end
 %% Run Simulation
 % SimStart&FinishTime
