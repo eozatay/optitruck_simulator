@@ -257,7 +257,7 @@ SheetName	= strrep(Sheetname, ' ', '_');
 j = 1;
 for i = 1:size(raw.(SheetName),1)
     if strcmp(raw.(SheetName){i,4}, 'Predictive Cruise Control Module')
-        if ~strcmp(raw.(SheetName){i,5}, 'PCCM RPU Interface')
+        if strcmp(raw.(SheetName){i,5}, 'Prediction Horizon Generator') || strcmp(raw.(SheetName){i,5}, 'PCCM RPU Interface') %if ~(strcmp(raw.(SheetName){i,5}, 'Real PCCM'))
             PCCMsgn_Del.Ind(j,1)    	= i;
             PCCMsgn_Del.MdlName{j,1}	= raw.(SheetName){i,5};
             PCCMsgn_Del.SgnName{j,1}	= raw.(SheetName){i,10};
