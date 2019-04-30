@@ -42,7 +42,7 @@ if Options.LoadRefCycle
         end
     end
     % Disable dyno mode
-	open_system('Virtual_Engine_Dynamometer.slx');
+    open_system('Virtual_Engine_Dynamometer.slx');
     DynoSwitchElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'swtDynoActvd');
     set_param(DynoSwitchElement, 'Value', '0'); % '0' - Disable, '1' - Enable
     DynoModeElement   = find_system('Virtual_Engine_Dynamometer', 'LookUnderMasks', 'on', 'FindAll', 'on','Regexp', 'on', 'IncludeCommented', 'on', 'BlockType', 'Constant', 'Name', 'numDynoMod');
@@ -50,7 +50,11 @@ if Options.LoadRefCycle
     close_system('Virtual_Engine_Dynamometer.slx', 1);% Save and Close
     % Overwrite to gui_data
     gui_data.RoadGradeInfo.Indx         = 4; % 1: Constant (Grade_Ref), 2: Function (Grade_Ref), 3: Distance Based (Grade_Ref), 4: Time Based (Grade_Ref)
-    gui_data.RouteInfo.Filetype         = 2; % 1: Distance Based (vVeh_Ref), 2: Time Based (vVeh_Ref) (if starts with 1 - shifted vVeh_Ref trace)
+    gui_data.RouteInfo.Filetype         = 2; % 1: Distance Based (vVeh_Ref), 2: Time Based (vVeh_Ref), 3: Distance Based (vVeh_Ref - Avoid 0 speed)
+    gui_data.RefSpdInfo.Indx            = 4;
+    gui_data.LocationInfo.Indx          = 2; % 1: Constant (Long/Lat)
+    gui_data.LocationInfo.Constant_Lon  = 30;
+    gui_data.LocationInfo.Constant_Lat  = 40;
     gui_data.RouteInfo.Distance         = REFcycle.Distance;
     gui_data.RouteInfo.Speed            = REFcycle.Velocity;
     gui_data.RouteInfo.Grade            = REFcycle.Grade;
@@ -63,6 +67,10 @@ if Options.LoadRefCycle
     gui_data.CloudRouteInfo.Distance   	= interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),CloudRouteSize)');
     gui_data.CloudRouteInfo.Speed   	= interp1(REFcycle.Time, REFcycle.Velocity, linspace(0,REFcycle.Time(end),CloudRouteSize)');
     gui_data.CloudRouteInfo.Power   	= interp1(REFcycle.Time, REFcycle.pwrEng, linspace(0,REFcycle.Time(end),CloudRouteSize)');
+    LocationSize                        = 10000;
+    gui_data.LocationInfo.Distance   	= interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),LocationSize)');
+    gui_data.LocationInfo.Longitude   	= 0*interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),LocationSize)');
+    gui_data.LocationInfo.Lattitude   	= 0*interp1(REFcycle.Time, REFcycle.Distance, linspace(0,REFcycle.Time(end),LocationSize)');
 end
 %% Run Simulation
 % SimStart&FinishTime
